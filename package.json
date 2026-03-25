@@ -1,0 +1,26 @@
+{
+  "name": "golf-charity-platform",
+  "version": "1.0.0",
+  "description": "Golf Charity Subscription Platform - A subscription-driven platform combining golf performance tracking, monthly draws, and charitable giving",
+  "private": true,
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build"
+  },
+  "keywords": [
+    "golf",
+    "charity",
+    "subscription",
+    "stableford",
+    "draw"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
