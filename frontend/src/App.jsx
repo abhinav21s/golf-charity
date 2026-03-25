@@ -19,6 +19,7 @@ import CharitiesPage from './pages/CharitiesPage';
 import CharityDetailPage from './pages/CharityDetailPage';
 import WinningsPage from './pages/WinningsPage';
 import PricingPage from './pages/PricingPage';
+import SubscriptionSuccessPage from './pages/SubscriptionSuccessPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminDraws from './pages/admin/AdminDraws';
@@ -76,6 +77,17 @@ function AppRoutes() {
       <Route path="/charities/:charityId" element={<CharityDetailPage />} />
       <Route path="/draws" element={<DrawsPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      
+      {/* Subscription Success (after Stripe payment) */}
+      <Route
+        path="/subscription-success"
+        element={
+          <ProtectedRoute>
+            <SubscriptionSuccessPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/subscription-success" element={<SubscriptionSuccessPage />} />
       
       {/* Auth Routes */}
       <Route

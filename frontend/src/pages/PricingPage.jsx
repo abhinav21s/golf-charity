@@ -22,7 +22,8 @@ const PricingPage = () => {
   const fetchCurrentSubscription = async () => {
     try {
       const response = await api.get('/subscriptions/my-subscription');
-      setCurrentSubscription(response.data);
+      // Response format: { success: true, data: subscription }
+      setCurrentSubscription(response.data?.data || response.data);
     } catch (error) {
       // Silently handle - user may not have subscription
       console.log('No subscription found');
