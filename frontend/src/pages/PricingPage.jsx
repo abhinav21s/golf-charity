@@ -29,14 +29,31 @@ const PricingPage = () => {
     }
   };
 
-  const handleSubscribe = (planType) => {
+  const handleSubscribe = async (planType) => {
     if (!user) {
       navigate('/register');
       return;
     }
 
-    // Phase 1: Stripe not integrated yet
-    toast.info('Stripe payment integration coming soon! This feature will be available after deployment.');
+    setLoading(true);
+    try {
+      const response = await api.post('/subscriptions/create-checkout', {
+        planType,
+        currency: 'INR'
+      });
+
+      if (response.data.success && response.data.data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = response.data.data.url;
+      } else {
+        toast.error('Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast.error(error.response?.data?.message || 'Failed to start subscription process');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isCurrentPlan = (planType) => {
@@ -135,11 +152,12 @@ const PricingPage = () => {
                 ) : (
                   <button
                     onClick={() => handleSubscribe(plan.type)}
+                    disabled={loading}
                     className={`w-full ${
                       plan.recommended ? 'btn-primary' : 'btn-secondary'
-                    }`}
+                    } ${loading ? 'opacity-75 cursor-wait' : ''}`}
                   >
-                    {user ? 'Subscribe Now' : 'Sign Up to Subscribe'}
+                    {loading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign Up to Subscribe'}
                   </button>
                 )}
               </div>
