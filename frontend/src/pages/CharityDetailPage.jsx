@@ -11,7 +11,7 @@ import { validateContributionPercentage } from '../utils/validation';
 import api from '../services/api';
 
 const CharityDetailPage = () => {
-  const { id } = useParams();
+  const { charityId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -23,12 +23,12 @@ const CharityDetailPage = () => {
 
   useEffect(() => {
     fetchCharityDetails();
-  }, [id]);
+  }, [charityId]);
 
   const fetchCharityDetails = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/charities/${id}`);
+      const response = await api.get(`/charities/${charityId}`);
       console.log('Charity detail response:', response.data);
       if (response.data.success) {
         setCharity(response.data.data);
