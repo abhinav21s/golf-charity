@@ -16,7 +16,8 @@ const AdminDraws = () => {
   const [formData, setFormData] = useState({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
-    draw_type: 'random'
+    draw_type: 'random',
+    manual_numbers: '' // For manual number entry
   });
   const [formErrors, setFormErrors] = useState({});
   const [simulating, setSimulating] = useState(false);
@@ -111,6 +112,23 @@ const AdminDraws = () => {
       errors.year = 'Year cannot be in the past';
     }
 
+    // Validate manual numbers if manual draw type
+    if (formData.draw_type === 'manual') {
+      const numbersStr = formData.manual_numbers.trim();
+      if (!numbersStr) {
+        errors.manual_numbers = 'Please enter 5 numbers';
+      } else {
+        const numbers = numbersStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+        if (numbers.length !== 5) {
+          errors.manual_numbers = 'Must enter exactly 5 numbers';
+        } else if (numbers.some(n => n < 1 || n > 45)) {
+          errors.manual_numbers = 'All numbers must be between 1 and 45';
+        } else if (new Set(numbers).size !== 5) {
+          errors.manual_numbers = 'Numbers must be unique';
+        }
+      }
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -122,12 +140,19 @@ const AdminDraws = () => {
 
     setSimulating(true);
     try {
-      const response = await api.post('/draws/create', {
+      const payload = {
         month: parseInt(formData.month),
         year: parseInt(formData.year),
         drawType: formData.draw_type,
         simulate: true
-      });
+      };
+
+      // Add manual numbers if manual draw type
+      if (formData.draw_type === 'manual') {
+        payload.manualNumbers = formData.manual_numbers.split(',').map(n => parseInt(n.trim()));
+      }
+
+      const response = await api.post('/draws/create', payload);
       
       // Parse the nested response structure
       const simData = response.data.data || response.data;
@@ -155,12 +180,19 @@ const AdminDraws = () => {
 
     setPublishing(true);
     try {
-      await api.post('/draws/create', {
+      const payload = {
         month: parseInt(formData.month),
         year: parseInt(formData.year),
         drawType: formData.draw_type,
         simulate: false
-      });
+      };
+
+      // Add manual numbers if manual draw type
+      if (formData.draw_type === 'manual') {
+        payload.manualNumbers = formData.manual_numbers.split(',').map(n => parseInt(n.trim()));
+      }
+
+      await api.post('/draws/create', payload);
       toast.success('Draw published successfully!');
       setShowCreateModal(false);
       setSimulationResults(null);
@@ -178,7 +210,8 @@ const AdminDraws = () => {
     setFormData({
       month: new Date().getMonth() + 1,
       year: new Date().getFullYear(),
-      draw_type: 'random'
+      draw_type: 'random',
+      manual_numbers: ''
     });
     setFormErrors({});
     setSimulationResults(null);
@@ -454,8 +487,33 @@ const AdminDraws = () => {
               >
                 <option value="random">Random</option>
                 <option value="algorithmic">Algorithmic</option>
+                <option value="manual">Manual (Testing)</option>
               </select>
             </div>
+
+            {/* Manual Numbers Input - Only show when Manual is selected */}
+            {formData.draw_type === 'manual' && (
+              <div>
+                <label htmlFor="manual_numbers" className="block text-sm font-medium text-slate-700 mb-2">
+                  Winning Numbers (5 numbers, comma-separated, 1-45)
+                </label>
+                <input
+                  type="text"
+                  id="manual_numbers"
+                  name="manual_numbers"
+                  placeholder="e.g., 10, 25, 30, 31, 33"
+                  value={formData.manual_numbers}
+                  onChange={handleInputChange}
+                  className={`input ${formErrors.manual_numbers ? 'input-error' : ''}`}
+                />
+                {formErrors.manual_numbers && (
+                  <p className="text-danger-600 text-sm mt-1">{formErrors.manual_numbers}</p>
+                )}
+                <p className="text-sm text-slate-600 mt-1">
+                  Enter exactly 5 numbers between 1-45, separated by commas
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Simulation Results */}

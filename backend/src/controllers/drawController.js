@@ -148,7 +148,7 @@ const countMatches = (userNumbers, drawNumbers) => {
  */
 const createDraw = async (req, res) => {
   try {
-    const { month, year, drawType, simulate = false } = req.body;
+    const { month, year, drawType, simulate = false, manualNumbers } = req.body;
 
     // Validate inputs
     if (!month || !year || !drawType) {
@@ -165,11 +165,33 @@ const createDraw = async (req, res) => {
       });
     }
 
-    if (!['random', 'algorithmic'].includes(drawType)) {
+    if (!['random', 'algorithmic', 'manual'].includes(drawType)) {
       return res.status(400).json({
         success: false,
-        message: 'Draw type must be random or algorithmic'
+        message: 'Draw type must be random, algorithmic, or manual'
       });
+    }
+
+    // Validate manual numbers if provided
+    if (drawType === 'manual') {
+      if (!manualNumbers || !Array.isArray(manualNumbers) || manualNumbers.length !== 5) {
+        return res.status(400).json({
+          success: false,
+          message: 'Manual draw requires exactly 5 numbers'
+        });
+      }
+      if (manualNumbers.some(n => n < 1 || n > 45)) {
+        return res.status(400).json({
+          success: false,
+          message: 'All numbers must be between 1 and 45'
+        });
+      }
+      if (new Set(manualNumbers).size !== 5) {
+        return res.status(400).json({
+          success: false,
+          message: 'Numbers must be unique'
+        });
+      }
     }
 
     // Check if draw already exists for this month/year
@@ -188,9 +210,14 @@ const createDraw = async (req, res) => {
     }
 
     // Generate winning numbers
-    const winningNumbers = drawType === 'random' 
-      ? generateRandomNumbers()
-      : await generateAlgorithmicNumbers('most_frequent');
+    let winningNumbers;
+    if (drawType === 'manual') {
+      winningNumbers = manualNumbers.sort((a, b) => a - b);
+    } else if (drawType === 'random') {
+      winningNumbers = generateRandomNumbers();
+    } else {
+      winningNumbers = await generateAlgorithmicNumbers('most_frequent');
+    }
 
     // Calculate prize pools
     const prizePool = await calculatePrizePool(month, year);

@@ -55,13 +55,14 @@ const DashboardPage = () => {
       }
 
       // Participation
-      if (results[3].status === 'fulfilled') {
-        setParticipation(results[3].value.data.slice(0, 3) || []);
+      if (results[3].status === 'fulfilled' && results[3].value.data.success) {
+        const participationData = results[3].value.data.data || [];
+        setParticipation(participationData.slice(0, 3));
       }
 
       // Winnings
-      if (results[4].status === 'fulfilled') {
-        const winningsData = results[4].value.data || [];
+      if (results[4].status === 'fulfilled' && results[4].value.data.success) {
+        const winningsData = results[4].value.data.data || [];
         const total = winningsData.reduce((sum, w) => sum + (w.prize_amount || 0), 0);
         const paid = winningsData.filter(w => w.payment_status === 'paid').reduce((sum, w) => sum + (w.prize_amount || 0), 0);
         const pending = total - paid;
