@@ -136,6 +136,7 @@ CREATE TABLE draws (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   draw_month INTEGER NOT NULL CHECK (draw_month >= 1 AND draw_month <= 12),
   draw_year INTEGER NOT NULL CHECK (draw_year >= 2024),
+  draw_date DATE NOT NULL, -- Computed from draw_month and draw_year
   draw_type VARCHAR(20) NOT NULL CHECK (draw_type IN ('random', 'algorithmic')),
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'simulated', 'published')),
   winning_numbers INTEGER[] NOT NULL, -- Array of 5 numbers

@@ -236,6 +236,8 @@ const createDraw = async (req, res) => {
       threeMatch: []
     };
 
+    console.log('Processing active users:', activeUsers.length);
+
     for (const sub of activeUsers) {
       const userId = sub.user_id;
       
@@ -247,9 +249,13 @@ const createDraw = async (req, res) => {
         .order('score_date', { ascending: false })
         .limit(5);
 
+      console.log(`User ${userId}: ${userScores?.length || 0} scores found`);
+
       if (userScores && userScores.length === 5) {
         const userNumbers = userScores.map(s => s.score).sort((a, b) => a - b);
         const matchCount = countMatches(userNumbers, winningNumbers);
+
+        console.log(`User ${userId} numbers: [${userNumbers}], matches: ${matchCount}`);
 
         participants.push({
           user_id: userId,
@@ -267,6 +273,13 @@ const createDraw = async (req, res) => {
         }
       }
     }
+
+    console.log('Total participants:', participants.length);
+    console.log('Winners:', {
+      fiveMatch: winners.fiveMatch.length,
+      fourMatch: winners.fourMatch.length,
+      threeMatch: winners.threeMatch.length
+    });
 
     // Calculate prize amounts per winner
     const fiveMatchPrize = winners.fiveMatch.length > 0 
@@ -317,6 +330,9 @@ const createDraw = async (req, res) => {
       });
     }
 
+    // Create draw date (last day of the month)
+    const drawDate = new Date(year, month, 0); // Day 0 = last day of previous month, so month without -1 gives last day of that month
+
     // Create draw record
     const { data: newDraw, error: drawError } = await supabaseAdmin
       .from('draws')
@@ -324,6 +340,7 @@ const createDraw = async (req, res) => {
         {
           draw_month: month,
           draw_year: year,
+          draw_date: drawDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
           draw_type: drawType,
           status: 'published',
           winning_numbers: winningNumbers,
@@ -348,9 +365,15 @@ const createDraw = async (req, res) => {
       ...p
     }));
 
-    await supabaseAdmin
-      .from('draw_participants')
-      .insert(participantRecords);
+    if (participantRecords.length > 0) {
+      const { error: participantError } = await supabaseAdmin
+        .from('draw_participants')
+        .insert(participantRecords);
+
+      if (participantError) {
+        console.error('Participant insert error:', participantError);
+      }
+    }
 
     // Save winners
     const winnerRecords = [];
@@ -383,9 +406,14 @@ const createDraw = async (req, res) => {
     });
 
     if (winnerRecords.length > 0) {
-      await supabaseAdmin
+      const { error: winnerError } = await supabaseAdmin
         .from('winners')
         .insert(winnerRecords);
+
+      if (winnerError) {
+        console.error('Winner insert error:', winnerError);
+        throw winnerError;
+      }
 
       // Send winner notification emails
       for (const winner of winnerRecords) {
