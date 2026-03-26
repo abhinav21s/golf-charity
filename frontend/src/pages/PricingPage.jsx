@@ -106,63 +106,114 @@ const PricingPage = () => {
             description="Choose a plan that works for you and start making a difference"
           />
 
+          {/* Current Subscription Banner (if user has active subscription) */}
+          {currentSubscription && currentSubscription.status === 'active' && (
+            <div className="card bg-success-50 border-2 border-success-500 max-w-3xl mx-auto mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-success-900 mb-1">
+                    ✓ Active Subscription
+                  </h3>
+                  <p className="text-success-700">
+                    You're currently on the <span className="font-semibold">{currentSubscription.plan_type === 'monthly' ? 'Monthly' : 'Yearly'}</span> plan
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="btn btn-secondary"
+                >
+                  Go to Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Pricing Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {plans.map((plan) => (
-              <div
-                key={plan.type}
-                className={`card relative ${
-                  plan.recommended ? 'border-2 border-accent-500 shadow-lg' : ''
-                }`}
-              >
-                {plan.recommended && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="px-4 py-1 bg-accent-500 text-white rounded-full text-sm font-semibold">
-                      ⭐ Recommended
-                    </span>
-                  </div>
-                )}
+            {plans.map((plan) => {
+              const isCurrent = isCurrentPlan(plan.type);
+              const hasSubscription = currentSubscription && currentSubscription.status === 'active';
+              const canUpgrade = hasSubscription && !isCurrent && plan.type === 'yearly' && currentSubscription.plan_type === 'monthly';
 
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-display font-bold mb-2">{plan.name}</h2>
-                  <div className="mb-2">
-                    <span className="text-4xl font-bold text-primary-600">{plan.price}</span>
-                    <span className="text-slate-600 ml-2">{plan.billing}</span>
+              return (
+                <div
+                  key={plan.type}
+                  className={`card relative ${
+                    plan.recommended && !hasSubscription ? 'border-2 border-accent-500 shadow-lg' : ''
+                  } ${isCurrent ? 'border-2 border-success-500 bg-success-50' : ''}`}
+                >
+                  {plan.recommended && !hasSubscription && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="px-4 py-1 bg-accent-500 text-white rounded-full text-sm font-semibold">
+                        ⭐ Recommended
+                      </span>
+                    </div>
+                  )}
+
+                  {isCurrent && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="px-4 py-1 bg-success-600 text-white rounded-full text-sm font-semibold">
+                        ✓ Your Plan
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-display font-bold mb-2">{plan.name}</h2>
+                    <div className="mb-2">
+                      <span className="text-4xl font-bold text-primary-600">{plan.price}</span>
+                      <span className="text-slate-600 ml-2">{plan.billing}</span>
+                    </div>
+                    {plan.savings && (
+                      <p className="text-success-600 font-semibold text-sm">{plan.savings}</p>
+                    )}
                   </div>
-                  {plan.savings && (
-                    <p className="text-success-600 font-semibold text-sm">{plan.savings}</p>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <span className="text-success-600 mt-1">✓</span>
+                        <span className="text-slate-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isCurrent ? (
+                    <button
+                      disabled
+                      className="btn btn-secondary w-full opacity-75 cursor-not-allowed"
+                    >
+                      ✓ Current Plan
+                    </button>
+                  ) : canUpgrade ? (
+                    <button
+                      onClick={() => handleSubscribe(plan.type)}
+                      disabled={loading}
+                      className={`btn btn-primary w-full ${loading ? 'opacity-75 cursor-wait' : ''}`}
+                    >
+                      {loading ? 'Processing...' : '⬆️ Upgrade to Yearly'}
+                    </button>
+                  ) : hasSubscription ? (
+                    <button
+                      disabled
+                      className="btn btn-secondary w-full opacity-50 cursor-not-allowed"
+                    >
+                      Not Available
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleSubscribe(plan.type)}
+                      disabled={loading}
+                      className={`btn w-full ${
+                        plan.recommended ? 'btn-primary' : 'btn-secondary'
+                      } ${loading ? 'opacity-75 cursor-wait' : ''}`}
+                    >
+                      {loading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign Up to Subscribe'}
+                    </button>
                   )}
                 </div>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="text-success-600 mt-1">✓</span>
-                      <span className="text-slate-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {isCurrentPlan(plan.type) ? (
-                  <button
-                    disabled
-                    className="btn-secondary w-full opacity-75 cursor-not-allowed"
-                  >
-                    Current Plan
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleSubscribe(plan.type)}
-                    disabled={loading}
-                    className={`w-full ${
-                      plan.recommended ? 'btn-primary' : 'btn-secondary'
-                    } ${loading ? 'opacity-75 cursor-wait' : ''}`}
-                  >
-                    {loading ? 'Processing...' : user ? 'Subscribe Now' : 'Sign Up to Subscribe'}
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Additional Information */}

@@ -203,9 +203,9 @@ const DashboardPage = () => {
                   <p className="text-slate-600 mb-4">No charity selected</p>
                   <button
                     onClick={() => navigate('/charities')}
-                    className="btn-primary"
+                    className="btn btn-primary"
                   >
-                    Select Charity
+                    💙 Select Charity
                   </button>
                 </div>
               )}
