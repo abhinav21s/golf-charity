@@ -6,8 +6,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Heart } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import GolfBall from '../components/icons/GolfBall';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -103,7 +104,7 @@ const RegisterPage = () => {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-accent-600 rounded-xl flex items-center justify-center">
-              <Heart className="w-7 h-7 text-white" />
+              <GolfBall className="w-7 h-7 text-white" />
             </div>
             <span className="text-2xl font-display font-bold gradient-text">
               Golf Charity

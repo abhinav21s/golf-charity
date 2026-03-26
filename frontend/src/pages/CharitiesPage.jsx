@@ -10,9 +10,10 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 import PageHeader from '../components/shared/PageHeader';
 import Modal from '../components/shared/Modal';
-import { Heart, Search, Star, Check, ExternalLink } from 'lucide-react';
+import { Search, Star, Check, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import GolfBall from '../components/icons/GolfBall';
 
 const CharitiesPage = () => {
   const navigate = useNavigate();
@@ -209,7 +210,7 @@ const CharitiesPage = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Heart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <GolfBall className="w-16 h-16 text-slate-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold mb-2">No charities found</h3>
               <p className="text-slate-600">
                 {searchQuery ? 'Try a different search term' : 'No charities available at the moment'}

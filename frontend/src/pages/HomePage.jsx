@@ -8,7 +8,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Heart, 
   TrendingUp, 
   Users, 
   Award, 
@@ -19,6 +18,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import GolfBall from '../components/icons/GolfBall';
 import { charityAPI } from '../services/api';
 
 const HomePage = () => {
@@ -149,7 +149,7 @@ const HomePage = () => {
                 color: 'from-orange-500 to-red-500'
               },
               {
-                icon: Heart,
+                icon: GolfBall,
                 title: 'Give Back',
                 description: 'Every subscription supports your chosen charity. Track your impact.',
                 color: 'from-green-500 to-emerald-500'
@@ -187,7 +187,7 @@ const HomePage = () => {
         <div className="container-custom">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             {[
-              { value: '$50K+', label: 'Donated to Charities', icon: Heart },
+              { value: '$50K+', label: 'Donated to Charities', icon: GolfBall },
               { value: '500+', label: 'Active Members', icon: Users },
               { value: '$25K+', label: 'Prizes Awarded', icon: Gift }
             ].map((stat, index) => (
@@ -237,7 +237,7 @@ const HomePage = () => {
                 <Link to={`/charities/${charity.id}`}>
                   <div className="card hover:scale-105 transition-transform duration-200 h-full">
                     <div className="w-20 h-20 mb-4 rounded-xl bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center">
-                      <Heart className="w-10 h-10 text-primary-600" />
+                      <GolfBall className="w-10 h-10 text-primary-600" />
                     </div>
                     <h3 className="text-xl font-bold mb-2">{charity.name}</h3>
                     <p className="text-slate-600 mb-4 line-clamp-3">{charity.description}</p>
