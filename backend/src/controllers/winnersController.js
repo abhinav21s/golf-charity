@@ -8,16 +8,8 @@ const { sendEmail } = require('../config/email');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, process.env.UPLOAD_DIR || 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'proof-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for memory storage (we'll upload to Supabase Storage)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -120,9 +112,35 @@ const uploadProof = async (req, res) => {
       });
     }
 
-    // In production, upload to cloud storage (S3, Cloudinary, etc.)
-    // For now, store local path
-    const proofUrl = `/uploads/${req.file.filename}`;
+    // Generate unique filename
+    const fileExt = path.extname(req.file.originalname);
+    const fileName = `proof-${winnerId}-${Date.now()}${fileExt}`;
+    const filePath = `winner-proofs/${fileName}`;
+
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabaseAdmin
+      .storage
+      .from('uploads')
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Supabase storage upload error:', uploadError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to upload image to storage'
+      });
+    }
+
+    // Get public URL
+    const { data: urlData } = supabaseAdmin
+      .storage
+      .from('uploads')
+      .getPublicUrl(filePath);
+
+    const proofUrl = urlData.publicUrl;
 
     // Update winner record
     const { data: updatedWinner, error: updateError } = await supabaseAdmin
