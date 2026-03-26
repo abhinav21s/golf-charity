@@ -108,7 +108,17 @@ const AdminDraws = () => {
         drawType: formData.draw_type,
         simulate: true
       });
-      setSimulationResults(response.data);
+      
+      // Parse the nested response structure
+      const simData = response.data.data || response.data;
+      setSimulationResults({
+        winning_numbers: simData.winningNumbers,
+        total_prize_pool: simData.prizePool?.totalPool || 0,
+        five_match_winners: simData.winners?.fiveMatch?.count || 0,
+        four_match_winners: simData.winners?.fourMatch?.count || 0,
+        three_match_winners: simData.winners?.threeMatch?.count || 0,
+        jackpot_rollover: simData.prizePool?.rolloverJackpot || 0
+      });
       toast.success('Draw simulated successfully!');
     } catch (error) {
       console.error('Simulate draw error:', error);
