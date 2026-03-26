@@ -22,7 +22,7 @@ const WinningsPage = () => {
   const fetchWinnings = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/winners/my-winnings');
+      const response = await api.get('/winners/my/winnings');
       setWinnings(response.data || []);
     } catch (error) {
       console.error('Fetch winnings error:', error);

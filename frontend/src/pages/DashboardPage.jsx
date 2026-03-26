@@ -29,8 +29,8 @@ const DashboardPage = () => {
         api.get('/subscriptions/my-subscription'),
         api.get('/scores?limit=5'),
         api.get('/charities/my/charity'),
-        api.get('/draws/my-participation'),
-        api.get('/winners/my-winnings')
+        api.get('/draws/my/participation'),
+        api.get('/winners/my/winnings')
       ]);
 
       // Subscription

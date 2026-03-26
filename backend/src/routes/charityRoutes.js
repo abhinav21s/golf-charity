@@ -10,12 +10,14 @@ const { validateCharitySelection } = require('../middleware/validation');
 
 // Public routes
 router.get('/', charityController.getCharities);
-router.get('/:charityId', charityController.getCharityById);
 
-// Protected user routes
+// Protected user routes (MUST come before /:charityId to avoid matching "my" as a UUID)
 router.post('/select', authenticate, validateCharitySelection, charityController.selectCharity);
 router.get('/my/charity', authenticate, charityController.getMyCharity);
 router.get('/my/contributions', authenticate, charityController.getMyContributions);
+
+// Public routes with parameters (MUST come after specific routes)
+router.get('/:charityId', charityController.getCharityById);
 
 // Admin routes
 router.post('/admin/create', authenticate, requireAdmin, charityController.createCharity);

@@ -10,10 +10,12 @@ const { validateDrawConfig } = require('../middleware/validation');
 
 // Public routes (view published draws)
 router.get('/', drawController.getDraws);
-router.get('/:drawId', drawController.getDrawById);
 
-// Protected user routes
+// Protected user routes (MUST come before /:drawId to avoid matching "my" as a UUID)
 router.get('/my/participation', authenticate, drawController.getMyParticipation);
+
+// Public routes with parameters (MUST come after specific routes)
+router.get('/:drawId', drawController.getDrawById);
 
 // Admin routes
 router.post('/create', authenticate, requireAdmin, validateDrawConfig, drawController.createDraw);
