@@ -191,6 +191,7 @@ const getAllWinners = async (req, res) => {
         draws (
           draw_month,
           draw_year,
+          draw_date,
           winning_numbers
         )
       `)
@@ -214,9 +215,20 @@ const getAllWinners = async (req, res) => {
       throw error;
     }
 
+    // Map the data to flatten nested structures
+    const mappedWinners = (winners || []).map(winner => ({
+      ...winner,
+      user_name: winner.users ? `${winner.users.first_name} ${winner.users.last_name}` : 'Unknown',
+      user_email: winner.users?.email || '',
+      draw_date: winner.draws?.draw_date || null,
+      draw_month: winner.draws?.draw_month || null,
+      draw_year: winner.draws?.draw_year || null,
+      proof_url: winner.proof_image_url || null
+    }));
+
     res.json({
       success: true,
-      data: winners || []
+      data: mappedWinners
     });
   } catch (error) {
     console.error('Get all winners error:', error);
