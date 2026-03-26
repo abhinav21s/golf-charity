@@ -123,7 +123,7 @@ const CharityDetailPage = () => {
                 {user && (
                   <button
                     onClick={() => setShowSelectionModal(true)}
-                    className="btn-primary"
+                    className="btn btn-primary"
                   >
                     Select This Charity
                   </button>
@@ -235,14 +235,14 @@ const CharityDetailPage = () => {
             <button
               type="button"
               onClick={() => setShowSelectionModal(false)}
-              className="btn-secondary flex-1"
+              className="btn btn-secondary flex-1"
               disabled={submitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn-primary flex-1"
+              className="btn btn-primary flex-1"
               disabled={submitting}
             >
               {submitting ? 'Selecting...' : 'Confirm Selection'}

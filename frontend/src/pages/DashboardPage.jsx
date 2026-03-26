@@ -163,7 +163,7 @@ const DashboardPage = () => {
                   <p className="text-slate-600 mb-4">No active subscription</p>
                   <button
                     onClick={() => navigate('/pricing')}
-                    className="btn-primary"
+                    className="btn btn-primary"
                   >
                     View Plans
                   </button>
@@ -193,7 +193,7 @@ const DashboardPage = () => {
                   </div>
                   <button
                     onClick={() => navigate('/charities')}
-                    className="btn-secondary w-full"
+                    className="btn btn-secondary w-full"
                   >
                     Change Charity
                   </button>
@@ -205,7 +205,7 @@ const DashboardPage = () => {
                     onClick={() => navigate('/charities')}
                     className="btn btn-primary"
                   >
-                    💙 Select Charity
+                    Select Charity
                   </button>
                 </div>
               )}
@@ -253,7 +253,7 @@ const DashboardPage = () => {
                   <p className="text-slate-600 mb-4">No scores recorded</p>
                   <button
                     onClick={() => navigate('/scores')}
-                    className="btn-primary"
+                    className="btn btn-primary"
                   >
                     Add Score
                   </button>
@@ -288,7 +288,7 @@ const DashboardPage = () => {
                   ))}
                   <button
                     onClick={() => navigate('/draws')}
-                    className="btn-secondary w-full mt-2"
+                    className="btn btn-secondary w-full mt-2"
                   >
                     View All Draws
                   </button>

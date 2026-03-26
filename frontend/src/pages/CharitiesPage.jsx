@@ -200,7 +200,7 @@ const CharitiesPage = () => {
                         onClick={() => handleOpenSelectionModal(charity)}
                         className={`btn flex-1 ${isSelected ? 'btn-success' : 'btn-primary'}`}
                       >
-                        {isSelected ? 'Update' : 'Select'}
+                        {isSelected ? 'Selected' : 'Select'}
                       </button>
                     </div>
                   </div>

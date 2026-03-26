@@ -191,7 +191,7 @@ const PricingPage = () => {
                       disabled={loading}
                       className={`btn btn-primary w-full ${loading ? 'opacity-75 cursor-wait' : ''}`}
                     >
-                      {loading ? 'Processing...' : '⬆️ Upgrade to Yearly'}
+                      {loading ? 'Processing...' : 'Upgrade to Yearly'}
                     </button>
                   ) : hasSubscription ? (
                     <button

@@ -110,7 +110,7 @@ const DrawsPage = () => {
                     </div>
                     <button
                       onClick={() => toggleDrawExpansion(draw.id)}
-                      className="btn-secondary"
+                      className="btn btn-secondary"
                     >
                       {expandedDrawId === draw.id ? 'Hide Details' : 'View Details'}
                     </button>
