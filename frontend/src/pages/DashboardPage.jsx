@@ -33,6 +33,14 @@ const DashboardPage = () => {
         api.get('/winners/my/winnings')
       ]);
 
+      // Log any failures for debugging
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const endpoints = ['subscriptions', 'scores', 'charity', 'participation', 'winnings'];
+          console.error(`Failed to load ${endpoints[index]}:`, result.reason);
+        }
+      });
+
       // Subscription
       if (results[0].status === 'fulfilled' && results[0].value.data.success) {
         setSubscription(results[0].value.data.data);
@@ -70,7 +78,7 @@ const DashboardPage = () => {
       }
     } catch (error) {
       console.error('Dashboard fetch error:', error);
-      toast.error('Failed to load dashboard data');
+      // Don't show error toast since Promise.allSettled handles failures gracefully
     } finally {
       setLoading(false);
     }

@@ -62,7 +62,7 @@ const WinningsPage = () => {
       const formData = new FormData();
       formData.append('proof', file);
 
-      await api.post(`/api/winners/${winnerId}/upload-proof`, formData, {
+      await api.post(`/winners/${winnerId}/upload-proof`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -72,7 +72,7 @@ const WinningsPage = () => {
       fetchWinnings();
     } catch (error) {
       console.error('Upload proof error:', error);
-      toast.error(error.response?.data?.error || 'Failed to upload proof');
+      toast.error(error.response?.data?.message || 'Failed to upload proof');
     } finally {
       setUploadingWinnerId(null);
       setSelectedFile(null);
@@ -183,7 +183,7 @@ const WinningsPage = () => {
                         </span>
                       </td>
                       <td className="px-4 py-4 text-sm">
-                        {winning.verification_status === 'not_submitted' && (
+                        {winning.verification_status === 'pending' && !winning.proof_image_url && (
                           <div>
                             <input
                               type="file"
@@ -195,7 +195,7 @@ const WinningsPage = () => {
                             />
                             <label
                               htmlFor={`file-${winning.id}`}
-                              className={`btn-primary text-xs cursor-pointer inline-block ${
+                              className={`btn btn-primary text-xs cursor-pointer inline-block ${
                                 uploadingWinnerId === winning.id ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
                             >
@@ -203,7 +203,7 @@ const WinningsPage = () => {
                             </label>
                           </div>
                         )}
-                        {winning.verification_status === 'pending' && (
+                        {winning.verification_status === 'pending' && winning.proof_image_url && (
                           <span className="text-xs text-slate-600">Under review</span>
                         )}
                         {winning.verification_status === 'approved' && (
@@ -222,7 +222,7 @@ const WinningsPage = () => {
                             />
                             <label
                               htmlFor={`file-retry-${winning.id}`}
-                              className={`btn-secondary text-xs cursor-pointer inline-block ${
+                              className={`btn btn-secondary text-xs cursor-pointer inline-block ${
                                 uploadingWinnerId === winning.id ? 'opacity-50 cursor-not-allowed' : ''
                               }`}
                             >
