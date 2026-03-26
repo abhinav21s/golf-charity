@@ -1,38 +1,28 @@
 /**
  * Email Configuration
- * Nodemailer setup for sending transactional emails
+ * Brevo API for sending transactional emails (works on Render - no SMTP ports blocked)
  */
 
-const nodemailer = require('nodemailer');
+const brevo = require('@getbrevo/brevo');
 require('dotenv').config();
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: process.env.EMAIL_PORT || 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  },
-  connectionTimeout: 5000, // 5 second timeout
-  greetingTimeout: 5000
-});
+// Initialize Brevo API client
+let brevoClient = null;
 
-// Verify transporter configuration (non-blocking)
-transporter.verify((error) => {
-  if (error) {
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.warn('[EMAIL] Transporter not configured or unavailable');
-    console.warn('[EMAIL] Error:', error.message);
-    console.warn('[EMAIL] Emails will be skipped until EMAIL_* env variables are configured');
-    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  } else {
-    console.log('✓ Email server is ready to send messages');
-    console.log(`  Host: ${process.env.EMAIL_HOST || 'smtp.gmail.com'}`);
-    console.log(`  User: ${process.env.EMAIL_USER}`);
-  }
-});
+if (process.env.BREVO_API_KEY) {
+  const apiInstance = new brevo.TransactionalEmailsApi();
+  const apiKey = apiInstance.authentications['apiKey'];
+  apiKey.apiKey = process.env.BREVO_API_KEY;
+  brevoClient = apiInstance;
+  console.log('✓ Brevo email service is ready');
+  console.log(`  From: ${process.env.EMAIL_FROM || 'noreply@golfcharity.com'}`);
+} else {
+  console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.warn('[EMAIL] Brevo API key not configured');
+  console.warn('[EMAIL] Emails will be skipped until BREVO_API_KEY is set');
+  console.warn('[EMAIL] Get your API key from: https://app.brevo.com/settings/keys/api');
+  console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+}
 
 /**
  * Send email helper function (non-blocking, won't crash app if email fails)
@@ -43,24 +33,30 @@ transporter.verify((error) => {
  * @param {string} options.text - Plain text content
  */
 const sendEmail = async ({ to, subject, html, text }) => {
-  // Skip if email not configured
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+  // Skip if Brevo not configured
+  if (!brevoClient || !process.env.BREVO_API_KEY) {
     console.log(`[EMAIL SKIPPED] Not configured - Subject: "${subject}" To: ${to}`);
-    console.log('[EMAIL CONFIG] Set EMAIL_USER and EMAIL_PASSWORD in .env to enable emails');
-    return { success: false, error: 'Email not configured' };
+    console.log('[EMAIL CONFIG] Set BREVO_API_KEY in .env to enable emails');
+    return { success: false, error: 'Brevo API key not configured' };
   }
 
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Golf Charity Platform" <noreply@golfcharity.com>',
-      to,
-      subject,
-      text,
-      html
-    });
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
     
-    console.log(`[EMAIL SENT] Subject: "${subject}" To: ${to} MessageID: ${info.messageId}`);
-    return { success: true, messageId: info.messageId };
+    sendSmtpEmail.sender = {
+      email: process.env.EMAIL_FROM || 'noreply@golfcharity.com',
+      name: 'Golf Charity Platform'
+    };
+    
+    sendSmtpEmail.to = [{ email: to }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.textContent = text;
+
+    const result = await brevoClient.sendTransacEmail(sendSmtpEmail);
+    
+    console.log(`[EMAIL SENT] Subject: "${subject}" To: ${to} MessageID: ${result.messageId}`);
+    return { success: true, messageId: result.messageId };
   } catch (error) {
     console.error(`[EMAIL FAILED] Subject: "${subject}" To: ${to} Error: ${error.message}`);
     // Don't throw - just log and continue
@@ -69,6 +65,5 @@ const sendEmail = async ({ to, subject, html, text }) => {
 };
 
 module.exports = {
-  transporter,
   sendEmail
 };
