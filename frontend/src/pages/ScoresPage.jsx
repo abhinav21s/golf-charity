@@ -44,7 +44,11 @@ const ScoresPage = () => {
       }
 
       if (statsRes.data.success) {
-        setStats(statsRes.data.data);
+        setStats({
+          average: statsRes.data.data.averageScore || 0,
+          highest: statsRes.data.data.highestScore || 0,
+          lowest: statsRes.data.data.lowestScore || 0
+        });
       }
     } catch (error) {
       console.error('Fetch scores error:', error);
@@ -64,7 +68,7 @@ const ScoresPage = () => {
   const handleOpenEditModal = (score) => {
     setFormData({ 
       score: score.score.toString(), 
-      date: score.date 
+      date: score.score_date ? new Date(score.score_date).toISOString().split('T')[0] : ''
     });
     setFormErrors({});
     setEditingScore(score);
@@ -232,7 +236,7 @@ const ScoresPage = () => {
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900">
-                          {new Date(score.date).toLocaleDateString('en-US', { 
+                          {new Date(score.score_date).toLocaleDateString('en-US', { 
                             weekday: 'long', 
                             year: 'numeric', 
                             month: 'long', 
@@ -362,7 +366,7 @@ const ScoresPage = () => {
         onClose={() => setDeleteConfirm(null)}
         onConfirm={handleDelete}
         title="Delete Score"
-        message={`Are you sure you want to delete the score of ${deleteConfirm?.score} from ${deleteConfirm ? new Date(deleteConfirm.date).toLocaleDateString() : ''}? This action cannot be undone.`}
+        message={`Are you sure you want to delete the score of ${deleteConfirm?.score} from ${deleteConfirm ? new Date(deleteConfirm.score_date).toLocaleDateString() : ''}? This action cannot be undone.`}
         confirmText="Delete"
         confirmColor="danger"
       />
