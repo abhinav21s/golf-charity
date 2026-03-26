@@ -55,8 +55,8 @@ const CharityDetailPage = () => {
     setSubmitting(true);
     try {
       await api.post('/charities/select', {
-        charity_id: charity.id,
-        contribution_percentage: contributionPercentage
+        charityId: charity.id,
+        contributionPercentage: contributionPercentage
       });
       toast.success('Charity selected successfully!');
       setShowSelectionModal(false);

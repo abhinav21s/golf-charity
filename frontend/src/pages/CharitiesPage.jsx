@@ -90,8 +90,8 @@ const CharitiesPage = () => {
     try {
       setSubmitting(true);
       const response = await api.post('/charities/select', {
-        charity_id: selectionFormData.charityId,
-        contribution_percentage: selectionFormData.contributionPercentage
+        charityId: selectionFormData.charityId,
+        contributionPercentage: selectionFormData.contributionPercentage
       });
 
       if (response.data.success) {
