@@ -22,10 +22,15 @@ const transporter = nodemailer.createTransport({
 // Verify transporter configuration (non-blocking)
 transporter.verify((error) => {
   if (error) {
-    console.warn('Email transporter not configured or unavailable:', error.message);
-    console.warn('Emails will be skipped. Configure EMAIL_* env variables to enable emails.');
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.warn('[EMAIL] Transporter not configured or unavailable');
+    console.warn('[EMAIL] Error:', error.message);
+    console.warn('[EMAIL] Emails will be skipped until EMAIL_* env variables are configured');
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   } else {
-    console.log('Email server is ready to send messages');
+    console.log('✓ Email server is ready to send messages');
+    console.log(`  Host: ${process.env.EMAIL_HOST || 'smtp.gmail.com'}`);
+    console.log(`  User: ${process.env.EMAIL_USER}`);
   }
 });
 
@@ -40,7 +45,8 @@ transporter.verify((error) => {
 const sendEmail = async ({ to, subject, html, text }) => {
   // Skip if email not configured
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-    console.log(`Email skipped (not configured): ${subject} to ${to}`);
+    console.log(`[EMAIL SKIPPED] Not configured - Subject: "${subject}" To: ${to}`);
+    console.log('[EMAIL CONFIG] Set EMAIL_USER and EMAIL_PASSWORD in .env to enable emails');
     return { success: false, error: 'Email not configured' };
   }
 
@@ -53,10 +59,10 @@ const sendEmail = async ({ to, subject, html, text }) => {
       html
     });
     
-    console.log('Email sent:', info.messageId);
+    console.log(`[EMAIL SENT] Subject: "${subject}" To: ${to} MessageID: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email (non-fatal):', error.message);
+    console.error(`[EMAIL FAILED] Subject: "${subject}" To: ${to} Error: ${error.message}`);
     // Don't throw - just log and continue
     return { success: false, error: error.message };
   }

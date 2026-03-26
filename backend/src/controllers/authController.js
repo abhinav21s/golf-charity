@@ -74,8 +74,8 @@ const register = async (req, res) => {
     // Generate JWT token
     const token = generateToken(newUser.id);
 
-    // Send welcome email
-    await sendEmail({
+    // Send welcome email (non-blocking)
+    const emailResult = await sendEmail({
       to: email,
       subject: 'Welcome to Golf Charity Platform',
       html: `
@@ -93,6 +93,12 @@ const register = async (req, res) => {
       `,
       text: `Welcome ${firstName}! Thank you for joining Golf Charity Platform.`
     });
+    
+    if (emailResult.success) {
+      console.log(`Welcome email sent to ${email}`);
+    } else {
+      console.log(`Welcome email skipped for ${email}: ${emailResult.error}`);
+    }
 
     // Return user data (excluding password)
     const { password_hash, ...userData } = newUser;
