@@ -28,7 +28,7 @@ const DashboardPage = () => {
       const results = await Promise.allSettled([
         api.get('/subscriptions/my-subscription'),
         api.get('/scores?limit=5'),
-        api.get('/charities/my-charity'),
+        api.get('/charities/my/charity'),
         api.get('/draws/my-participation'),
         api.get('/winners/my-winnings')
       ]);
@@ -45,7 +45,13 @@ const DashboardPage = () => {
 
       // Charity
       if (results[2].status === 'fulfilled') {
-        setCharity(results[2].value.data);
+        const charityData = results[2].value.data?.data;
+        if (charityData && charityData.charities) {
+          setCharity({
+            ...charityData.charities,
+            contribution_percentage: charityData.contribution_percentage
+          });
+        }
       }
 
       // Participation
