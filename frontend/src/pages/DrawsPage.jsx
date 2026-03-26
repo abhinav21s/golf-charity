@@ -136,14 +136,14 @@ const DrawsPage = () => {
                     <div className="bg-slate-50 rounded-lg p-4">
                       <h3 className="text-sm font-semibold text-slate-600 mb-2">Total Prize Pool</h3>
                       <p className="text-2xl font-bold text-primary-600">
-                        {formatCurrency(draw.total_prize_pool || 0)}
+                        {formatCurrency(draw.total_pool_amount || 0)}
                       </p>
                     </div>
-                    {draw.jackpot_rollover > 0 && (
+                    {draw.jackpot_amount > 0 && (
                       <div className="bg-accent-50 rounded-lg p-4">
                         <h3 className="text-sm font-semibold text-slate-600 mb-2">Jackpot Rollover</h3>
                         <p className="text-2xl font-bold text-accent-600">
-                          {formatCurrency(draw.jackpot_rollover)}
+                          {formatCurrency(draw.jackpot_amount)}
                         </p>
                         <p className="text-xs text-slate-600 mt-1">Added to next draw</p>
                       </div>
@@ -162,7 +162,7 @@ const DrawsPage = () => {
                           </span>
                         </div>
                         <p className="text-lg font-bold text-success-600">
-                          {formatCurrency(draw.five_match_prize || 0)}
+                          {formatCurrency(draw.five_match_pool || 0)}
                         </p>
                       </div>
                       <div className="border border-slate-200 rounded-lg p-4">
@@ -173,7 +173,7 @@ const DrawsPage = () => {
                           </span>
                         </div>
                         <p className="text-lg font-bold text-primary-600">
-                          {formatCurrency(draw.four_match_prize || 0)}
+                          {formatCurrency(draw.four_match_pool || 0)}
                         </p>
                       </div>
                       <div className="border border-slate-200 rounded-lg p-4">
@@ -184,7 +184,7 @@ const DrawsPage = () => {
                           </span>
                         </div>
                         <p className="text-lg font-bold text-accent-600">
-                          {formatCurrency(draw.three_match_prize || 0)}
+                          {formatCurrency(draw.three_match_pool || 0)}
                         </p>
                       </div>
                     </div>
