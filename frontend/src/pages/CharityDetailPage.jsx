@@ -29,11 +29,15 @@ const CharityDetailPage = () => {
     setLoading(true);
     try {
       const response = await api.get(`/charities/${id}`);
+      console.log('Charity detail response:', response.data);
       if (response.data.success) {
         setCharity(response.data.data);
+      } else {
+        toast.error('Failed to load charity details');
       }
     } catch (error) {
       console.error('Fetch charity error:', error);
+      console.error('Error response:', error.response?.data);
       if (error.response?.status === 404) {
         toast.error('Charity not found');
         navigate('/charities');

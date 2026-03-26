@@ -55,22 +55,19 @@ const getCharityById = async (req, res) => {
 
     const { data: charity, error } = await supabaseAdmin
       .from('charities')
-      .select(`
-        *,
-        charity_events (
-          id,
-          title,
-          description,
-          event_date,
-          location,
-          image_url
-        )
-      `)
+      .select('*')
       .eq('id', charityId)
       .single();
 
     if (error) {
       throw error;
+    }
+
+    if (!charity) {
+      return res.status(404).json({
+        success: false,
+        message: 'Charity not found'
+      });
     }
 
     res.json({
