@@ -34,13 +34,13 @@ const DashboardPage = () => {
       ]);
 
       // Subscription
-      if (results[0].status === 'fulfilled') {
-        setSubscription(results[0].value.data);
+      if (results[0].status === 'fulfilled' && results[0].value.data.success) {
+        setSubscription(results[0].value.data.data);
       }
 
       // Scores
-      if (results[1].status === 'fulfilled') {
-        setScores(results[1].value.data.scores || []);
+      if (results[1].status === 'fulfilled' && results[1].value.data.success) {
+        setScores(results[1].value.data.data || []);
       }
 
       // Charity
