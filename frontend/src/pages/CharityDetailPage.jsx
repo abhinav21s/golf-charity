@@ -28,8 +28,10 @@ const CharityDetailPage = () => {
   const fetchCharityDetails = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/api/charities/${id}`);
-      setCharity(response.data);
+      const response = await api.get(`/charities/${id}`);
+      if (response.data.success) {
+        setCharity(response.data.data);
+      }
     } catch (error) {
       console.error('Fetch charity error:', error);
       if (error.response?.status === 404) {
@@ -183,11 +185,11 @@ const CharityDetailPage = () => {
             )}
 
             {/* Contributions */}
-            {charity.total_contributions !== undefined && (
+            {charity.total_received !== undefined && (
               <div className="bg-slate-50 rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-2">Total Contributions</h2>
                 <p className="text-3xl font-bold text-primary-600">
-                  {formatCurrency(charity.total_contributions)}
+                  {formatCurrency(charity.total_received)}
                 </p>
                 <p className="text-sm text-slate-600 mt-1">
                   From our community members
