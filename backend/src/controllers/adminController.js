@@ -125,12 +125,12 @@ const getTotalPrizePool = async (req, res) => {
   try {
     const { data: draws, error } = await supabaseAdmin
       .from('draws')
-      .select('total_prize_pool')
+      .select('total_pool_amount')
       .eq('status', 'published');
 
     if (error) throw error;
 
-    const total = (draws || []).reduce((sum, draw) => sum + (draw.total_prize_pool || 0), 0);
+    const total = (draws || []).reduce((sum, draw) => sum + (draw.total_pool_amount || 0), 0);
 
     res.json({ total });
   } catch (error) {

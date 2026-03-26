@@ -52,7 +52,27 @@ const AdminDraws = () => {
     setLoadingDetails(prev => ({ ...prev, [drawId]: true }));
     try {
       const response = await api.get(`/draws/${drawId}`);
-      setDrawDetails(prev => ({ ...prev, [drawId]: response.data }));
+      const drawData = response.data?.data || response.data;
+      
+      // Map database fields to frontend expected fields
+      const mappedData = {
+        ...drawData,
+        total_prize_pool: drawData.total_pool_amount,
+        five_match_prize: drawData.five_match_pool,
+        jackpot_rollover: drawData.jackpot_amount,
+        participants: (drawData.draw_participants || []).map(p => ({
+          user_name: p.users ? `${p.users.first_name} ${p.users.last_name}` : 'Anonymous',
+          scores: p.user_numbers,
+          matches: p.matches_count
+        })),
+        winners: (drawData.winners || []).map(w => ({
+          user_name: w.users ? `${w.users.first_name} ${w.users.last_name}` : 'Anonymous',
+          match_type: w.match_type,
+          prize_amount: w.prize_amount
+        }))
+      };
+      
+      setDrawDetails(prev => ({ ...prev, [drawId]: mappedData }));
     } catch (error) {
       console.error('Fetch draw details error:', error);
       toast.error('Failed to load draw details');
