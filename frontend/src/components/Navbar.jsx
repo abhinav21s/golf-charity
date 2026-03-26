@@ -49,6 +49,12 @@ const Navbar = () => {
                 <Link to="/dashboard" className="text-slate-700 hover:text-primary-600 font-medium transition-colors">
                   Dashboard
                 </Link>
+                <Link to="/scores" className="text-slate-700 hover:text-primary-600 font-medium transition-colors">
+                  Scores
+                </Link>
+                <Link to="/winnings" className="text-slate-700 hover:text-primary-600 font-medium transition-colors">
+                  My Winnings
+                </Link>
                 {user?.role === 'admin' && (
                   <Link to="/admin" className="text-slate-700 hover:text-primary-600 font-medium transition-colors">
                     Admin
@@ -129,6 +135,20 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/scores"
+                    className="text-slate-700 hover:text-primary-600 font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Scores
+                  </Link>
+                  <Link
+                    to="/winnings"
+                    className="text-slate-700 hover:text-primary-600 font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    My Winnings
                   </Link>
                   {user?.role === 'admin' && (
                     <Link

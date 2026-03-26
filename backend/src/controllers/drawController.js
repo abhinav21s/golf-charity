@@ -148,7 +148,7 @@ const countMatches = (userNumbers, drawNumbers) => {
  */
 const createDraw = async (req, res) => {
   try {
-    const { month, year, drawType, simulate = false, manualNumbers } = req.body;
+    const { month, year, drawType, simulate = false } = req.body;
 
     // Validate inputs
     if (!month || !year || !drawType) {
@@ -165,33 +165,11 @@ const createDraw = async (req, res) => {
       });
     }
 
-    if (!['random', 'algorithmic', 'manual'].includes(drawType)) {
+    if (!['random', 'algorithmic'].includes(drawType)) {
       return res.status(400).json({
         success: false,
-        message: 'Draw type must be random, algorithmic, or manual'
+        message: 'Draw type must be random or algorithmic'
       });
-    }
-
-    // Validate manual numbers if provided
-    if (drawType === 'manual') {
-      if (!manualNumbers || !Array.isArray(manualNumbers) || manualNumbers.length !== 5) {
-        return res.status(400).json({
-          success: false,
-          message: 'Manual draw requires exactly 5 numbers'
-        });
-      }
-      if (manualNumbers.some(n => n < 1 || n > 45)) {
-        return res.status(400).json({
-          success: false,
-          message: 'All numbers must be between 1 and 45'
-        });
-      }
-      if (new Set(manualNumbers).size !== 5) {
-        return res.status(400).json({
-          success: false,
-          message: 'Numbers must be unique'
-        });
-      }
     }
 
     // Check if draw already exists for this month/year
@@ -211,9 +189,7 @@ const createDraw = async (req, res) => {
 
     // Generate winning numbers
     let winningNumbers;
-    if (drawType === 'manual') {
-      winningNumbers = manualNumbers.sort((a, b) => a - b);
-    } else if (drawType === 'random') {
+    if (drawType === 'random') {
       winningNumbers = generateRandomNumbers();
     } else {
       winningNumbers = await generateAlgorithmicNumbers('most_frequent');
@@ -516,9 +492,28 @@ const getDraws = async (req, res) => {
       throw error;
     }
 
+    // Add winner counts to each draw
+    const drawsWithCounts = await Promise.all((draws || []).map(async (draw) => {
+      const { data: winners } = await supabaseAdmin
+        .from('winners')
+        .select('match_type')
+        .eq('draw_id', draw.id);
+
+      const fiveMatchWinners = winners?.filter(w => w.match_type === '5-match').length || 0;
+      const fourMatchWinners = winners?.filter(w => w.match_type === '4-match').length || 0;
+      const threeMatchWinners = winners?.filter(w => w.match_type === '3-match').length || 0;
+
+      return {
+        ...draw,
+        five_match_winners: fiveMatchWinners,
+        four_match_winners: fourMatchWinners,
+        three_match_winners: threeMatchWinners
+      };
+    }));
+
     res.json({
       success: true,
-      data: draws || []
+      data: drawsWithCounts
     });
   } catch (error) {
     console.error('Get draws error:', error);

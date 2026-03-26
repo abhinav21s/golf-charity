@@ -23,7 +23,8 @@ const WinningsPage = () => {
     setLoading(true);
     try {
       const response = await api.get('/winners/my/winnings');
-      setWinnings(response.data || []);
+      const winningsData = response.data?.data?.winnings || response.data?.winnings || [];
+      setWinnings(winningsData);
     } catch (error) {
       console.error('Fetch winnings error:', error);
       toast.error('Failed to load winnings');

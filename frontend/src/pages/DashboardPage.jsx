@@ -65,7 +65,13 @@ const DashboardPage = () => {
       // Participation
       if (results[3].status === 'fulfilled' && results[3].value.data.success) {
         const participationData = results[3].value.data.data || [];
-        setParticipation(participationData.slice(0, 3));
+        // Map the participation data to include draw_date and user_scores
+        const mappedParticipation = participationData.map(p => ({
+          draw_date: p.draws?.draw_date || p.draw_date,
+          matches: p.matches_count,
+          user_scores: p.user_numbers
+        }));
+        setParticipation(mappedParticipation.slice(0, 3));
       }
 
       // Winnings

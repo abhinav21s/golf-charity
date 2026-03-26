@@ -104,27 +104,14 @@ const validateCharitySelection = [
  */
 const validateDrawConfig = [
   body('drawType')
-    .isIn(['random', 'algorithmic', 'manual'])
-    .withMessage('Draw type must be random, algorithmic, or manual'),
+    .isIn(['random', 'algorithmic'])
+    .withMessage('Draw type must be random or algorithmic'),
   body('month')
     .isInt({ min: 1, max: 12 })
     .withMessage('Month must be between 1 and 12'),
   body('year')
     .isInt({ min: 2024 })
     .withMessage('Year must be 2024 or later'),
-  body('manualNumbers')
-    .optional()
-    .isArray({ min: 5, max: 5 })
-    .withMessage('Manual numbers must be an array of exactly 5 numbers')
-    .custom((value) => {
-      if (value && value.some(n => n < 1 || n > 45)) {
-        throw new Error('All numbers must be between 1 and 45');
-      }
-      if (value && new Set(value).size !== 5) {
-        throw new Error('Numbers must be unique');
-      }
-      return true;
-    }),
   handleValidationErrors
 ];
 
