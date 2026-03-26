@@ -103,14 +103,16 @@ const AdminDraws = () => {
     setSimulating(true);
     try {
       const response = await api.post('/draws/create', {
-        ...formData,
+        month: parseInt(formData.month),
+        year: parseInt(formData.year),
+        drawType: formData.draw_type,
         simulate: true
       });
       setSimulationResults(response.data);
       toast.success('Draw simulated successfully!');
     } catch (error) {
       console.error('Simulate draw error:', error);
-      toast.error(error.response?.data?.error || 'Failed to simulate draw');
+      toast.error(error.response?.data?.message || 'Failed to simulate draw');
     } finally {
       setSimulating(false);
     }
@@ -124,7 +126,9 @@ const AdminDraws = () => {
     setPublishing(true);
     try {
       await api.post('/draws/create', {
-        ...formData,
+        month: parseInt(formData.month),
+        year: parseInt(formData.year),
+        drawType: formData.draw_type,
         simulate: false
       });
       toast.success('Draw published successfully!');
@@ -134,7 +138,7 @@ const AdminDraws = () => {
       fetchDraws();
     } catch (error) {
       console.error('Publish draw error:', error);
-      toast.error(error.response?.data?.error || 'Failed to publish draw');
+      toast.error(error.response?.data?.message || 'Failed to publish draw');
     } finally {
       setPublishing(false);
     }
