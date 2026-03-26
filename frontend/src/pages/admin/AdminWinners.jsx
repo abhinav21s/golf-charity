@@ -84,7 +84,7 @@ const AdminWinners = () => {
 
     setVerifying(true);
     try {
-      await api.put(`/winners/admin/${viewingProof.id}/verify`, {
+      await api.verifyWinner(viewingProof.id, {
         status: 'approved'
       });
       toast.success('Winner verified successfully!');
@@ -93,7 +93,7 @@ const AdminWinners = () => {
       fetchStats();
     } catch (error) {
       console.error('Approve winner error:', error);
-      toast.error(error.response?.data?.error || 'Failed to approve winner');
+      toast.error(error.response?.data?.message || 'Failed to approve winner');
     } finally {
       setVerifying(false);
     }
@@ -109,7 +109,7 @@ const AdminWinners = () => {
 
     setVerifying(true);
     try {
-      await api.put(`/winners/admin/${viewingProof.id}/verify`, {
+      await api.verifyWinner(viewingProof.id, {
         status: 'rejected',
         notes: rejectNotes
       });
@@ -120,7 +120,7 @@ const AdminWinners = () => {
       fetchStats();
     } catch (error) {
       console.error('Reject winner error:', error);
-      toast.error(error.response?.data?.error || 'Failed to reject winner');
+      toast.error(error.response?.data?.message || 'Failed to reject winner');
     } finally {
       setVerifying(false);
     }
@@ -128,14 +128,14 @@ const AdminWinners = () => {
 
   const handleMarkAsPaid = async (winnerId) => {
     try {
-      await api.put(`/winners/admin/${winnerId}/mark-paid`);
+      await api.markAsPaid(winnerId);
       toast.success('Winner marked as paid!');
       setMarkingPaid(null);
       fetchWinners();
       fetchStats();
     } catch (error) {
       console.error('Mark as paid error:', error);
-      toast.error(error.response?.data?.error || 'Failed to mark as paid');
+      toast.error(error.response?.data?.message || 'Failed to mark as paid');
     }
   };
 
